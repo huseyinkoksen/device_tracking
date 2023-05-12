@@ -61,7 +61,22 @@ namespace Business.Concrete
 
             return new SuccessDataResult<IndividualUser>(userToCheck, Messages.SuccessfulLogin);
         }
+     public IDataResult<CorporateUser> LoginCorporate(UserForLoginDto userForLoginDto)
+            {
+                var userToCheck = _userServiceCU.GetByMail(userForLoginDto.Email).Data;
+                if (userToCheck == null)
+                {
+                    return new ErrorDataResult<CorporateUser>(Messages.UserNotFound);
+                }
 
+                if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash,
+                        userToCheck.PasswordSalt))
+                {
+                    return new ErrorDataResult<CorporateUser>(Messages.PasswordError);
+                }
+
+                return new SuccessDataResult<CorporateUser>(userToCheck, Messages.SuccessfulLogin);
+            }
         public IDataResult<IndividualUser> RegisterIndividual(IndividualUserForRegisterDto userForRegisterDto,
             string password)
         {
@@ -80,26 +95,11 @@ namespace Business.Concrete
             return new SuccessDataResult<IndividualUser>(user, Messages.UserRegistered);
         }
 
-        public IDataResult<CorporateUser> LoginCorporate(UserForLoginDto userForLoginDto)
-        {
-            var userToCheck = _userServiceCU.GetByMail(userForLoginDto.Email).Data;
-            if (userToCheck == null)
-            {
-                return new ErrorDataResult<CorporateUser>(Messages.UserNotFound);
-            }
-
-            if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash,
-                    userToCheck.PasswordSalt))
-            {
-                return new ErrorDataResult<CorporateUser>(Messages.PasswordError);
-            }
-
-            return new SuccessDataResult<CorporateUser>(userToCheck, Messages.SuccessfulLogin);
-        }
+       
 
         public IResult UserExists(string email)
         {
-            if (_userServiceCU.GetByMail(email) != null)
+            if ((_userServiceCU.GetByMail(email).Data != null) && (_userServiceIU.GetByMail(email).Data !=null ))
             {
                 return new ErrorResult(Messages.UserAlreadyExists);
             }
@@ -107,7 +107,7 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        public IDataResult<AccessToken> CreateAccessTokenForIndivualUser(IndividualUser user)
+        public IDataResult<AccessToken> CreateAccessTokenForIndividualUser(IndividualUser user)
         {
             var claims = _userServiceIU.GetClaims(user).Data;
             var accessToken = _tokenHelper.CreateTokenForIndividualUser(user, claims);
