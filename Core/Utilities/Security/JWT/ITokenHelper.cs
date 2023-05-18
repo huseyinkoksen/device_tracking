@@ -9,7 +9,7 @@ namespace Core.Utilities.Security.JWT
 {
     public interface ITokenHelper
     {
-        AccessToken CreateTokenForIndividualUser(IndividualUser user, List<OperationClaim> operationClaims);
-        AccessToken CreateTokenForCorporateUser(CorporateUser user, List<OperationClaim> operationClaims);
+        AccessToken CreateTokenForUser(User user, List<OperationClaim> operationClaims);
+        
     }
 }

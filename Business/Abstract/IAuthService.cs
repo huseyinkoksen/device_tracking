@@ -7,17 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Utilities.Security.JWT;
+using Entities.Concrete;
 
 namespace Business.Abstract
 {
     public interface IAuthService
     {
         IDataResult<CorporateUser> RegisterCorporate(CorporateUserForRegisterDto userForRegisterDto, string password);
-        IDataResult<IndividualUser> LoginIndividual(UserForLoginDto userForLoginDto);
+        IDataResult<AccessToken> Login(UserForLoginDto userForLoginDto);
         IDataResult<IndividualUser> RegisterIndividual(IndividualUserForRegisterDto userForRegisterDto, string password);
-        IDataResult<CorporateUser> LoginCorporate(UserForLoginDto userForLoginDto);
         IResult UserExists(string email);
-        IDataResult<AccessToken> CreateAccessTokenForIndividualUser(IndividualUser user);
-        IDataResult<AccessToken> CreateAccessTokenForCorporateUser(CorporateUser user);
+        IDataResult<AccessToken> CreateAccessTokenForUser(User user);
+        IDataResult<User> GetCurrentUser();
     }
 }

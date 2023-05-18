@@ -11,9 +11,9 @@ namespace WebAPI.Controllers
     [ApiController]
     public class CorporateUserController : ControllerBase
     {
-        IUserService<CorporateUser> _corporateUserService;
+        IUserService _corporateUserService;
 
-        public CorporateUserController(IUserService<CorporateUser> corporateUserService)
+        public CorporateUserController(IUserService corporateUserService)
         {
             _corporateUserService = corporateUserService;
         }

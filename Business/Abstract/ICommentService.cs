@@ -16,6 +16,7 @@ namespace Business.Abstract
         IResult DeleteComment(Comment entity);
         IResult UpdateComment(Comment entity);
         IResult DeleteByIdComment(int id);
+        IResult DeleteCommentByYourself(int id);
         IDataResult<List<Comment>> GetByCompanyId(int companyId);
     }
 }

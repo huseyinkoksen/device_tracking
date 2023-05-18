@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
             }
 
             var registerResult = _authService.RegisterCorporate(corporateUserForRegisterDto, corporateUserForRegisterDto.Password);
-            var result = _authService.CreateAccessTokenForCorporateUser(registerResult.Data);
+            var result = _authService.CreateAccessTokenForUser(registerResult.Data);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
             }
 
             var registerResult = _authService.RegisterIndividual(individualUserForRegisterDto, individualUserForRegisterDto.Password);
-            var result = _authService.CreateAccessTokenForIndividualUser(registerResult.Data);
+            var result = _authService.CreateAccessTokenForUser(registerResult.Data);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -54,39 +54,20 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpPost("logincorporate")]
-        public ActionResult LoginCorporate(UserForLoginDto userForLoginDto)
+        [HttpPost("login")]
+        public ActionResult Login(UserForLoginDto userForLoginDto)
         {
-            var userToLogin = _authService.LoginCorporate(userForLoginDto);
+            var userToLogin = _authService.Login(userForLoginDto);
             if (!userToLogin.Success)
             {
                 return BadRequest(userToLogin.Message);
             }
 
-            var result = _authService.CreateAccessTokenForCorporateUser(userToLogin.Data);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
+            return Ok(userToLogin);
+            
 
-            return BadRequest(result.Message);
+            
         }
-        [HttpPost("loginindividual")]
-        public ActionResult LoginIndividual(UserForLoginDto userForLoginDto)
-        {
-            var userToLogin = _authService.LoginIndividual(userForLoginDto);
-            if (!userToLogin.Success)
-            {
-                return BadRequest(userToLogin.Message);
-            }
-
-            var result = _authService.CreateAccessTokenForIndividualUser(userToLogin.Data);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result.Message);
-        }
+        
     }
 }

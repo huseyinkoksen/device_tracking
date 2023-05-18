@@ -94,5 +94,17 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("[action]")]
+        public IActionResult DeleteCommentByYourself(int id)
+        {
+            var result = _commentService.DeleteCommentByYourself(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+
+        }
     }
 }

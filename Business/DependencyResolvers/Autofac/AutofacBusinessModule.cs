@@ -2,17 +2,13 @@
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
 using Core.Utilities.Security.JWT;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autofac.Extras.DynamicProxy;
 using Business.Abstract;
 using Business.Concrete;
-using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
+using Business.Services.ImageService.Concretes;
+using Business.Services.ImageService.Abstracts;
 
 namespace Business.DependencyResolvers.Autofac
 {
@@ -23,18 +19,17 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<CommentManager>().As<ICommentService>();
             builder.RegisterType<EfCommentDal>().As<ICommentDal>();
 
-            builder.RegisterType<IndividualUserManager>().As<IUserService<IndividualUser>>();
-            builder.RegisterType<EfIndividualUserDal>().As<IIndividualUserDal>();
-
-            builder.RegisterType<CorporateUserManager>().As<IUserService<CorporateUser>>();
-            builder.RegisterType<EfCorporateUserDal>().As<ICorporateUserDal>();
+            builder.RegisterType<UserManager>().As<IUserService>();
+            builder.RegisterType<EfUserDal>().As<IUserDal>();
 
 
             builder.RegisterType<CompanyManager>().As<ICompanyService>();
             builder.RegisterType<EfCompanyDal>().As<ICompanyDal>();
 
-            //builder.RegisterType<AuthManager>().As<IAuthService>();
+            builder.RegisterType<AuthManager>().As<IAuthService>();
             builder.RegisterType<JwtHelper>().As<ITokenHelper>();
+
+            builder.RegisterType<CloudinaryImageServiceAdapter>().As<ImageServiceBase>();
 
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();

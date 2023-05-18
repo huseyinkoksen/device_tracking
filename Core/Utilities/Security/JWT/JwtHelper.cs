@@ -25,12 +25,12 @@ namespace Core.Utilities.Security.JWT
             _tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
         }
 
-        public AccessToken CreateTokenForIndividualUser(IndividualUser user, List<OperationClaim> operationClaims)
+        public AccessToken CreateTokenForUser(User user, List<OperationClaim> operationClaims)
         {
             _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
             var signingCredentials = SigningCredentialsHelper.CreateSigningCredentials(securityKey);
-            var jwt = CreateJwtSecurityTokenForIndividualUser(_tokenOptions, user, signingCredentials, operationClaims);
+            var jwt = CreateJwtSecurityTokenForUser(_tokenOptions, user, signingCredentials, operationClaims);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwt);
 
@@ -41,7 +41,7 @@ namespace Core.Utilities.Security.JWT
             };
         }
 
-        public JwtSecurityToken CreateJwtSecurityTokenForIndividualUser(TokenOptions tokenOptions, IndividualUser user,
+        public JwtSecurityToken CreateJwtSecurityTokenForUser(TokenOptions tokenOptions, User user,
             SigningCredentials signingCredentials, List<OperationClaim> operationClaims)
         {
             var jwt = new JwtSecurityToken(
@@ -57,72 +57,16 @@ namespace Core.Utilities.Security.JWT
         }
         
 
-        private IEnumerable<Claim> SetClaims(IndividualUser user, List<OperationClaim> operationClaims)
+        private IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
         {
             var claims = new List<Claim>();
             claims.AddNameIdentifier(user.Id.ToString());
             claims.AddEmail(user.Email);
-            claims.AddName($"{user.FirstName} {user.LastName}");
             claims.AddRoles(operationClaims.Select(c => c.Name).ToArray());
 
             return claims;
         }
 
-        public AccessToken CreateTokenIndividualUser(IndividualUser user, List<OperationClaim> operationClaims)
-        {
-            _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
-            var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
-            var signingCredentials = SigningCredentialsHelper.CreateSigningCredentials(securityKey);
-            var jwt = CreateJwtSecurityTokenForIndividualUser(_tokenOptions, user, signingCredentials, operationClaims);
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var token = jwtSecurityTokenHandler.WriteToken(jwt);
-
-            return new AccessToken
-            {
-                Token = token,
-                Expiration = _accessTokenExpiration
-            };
-        }
-
-        public AccessToken CreateTokenForCorporateUser(CorporateUser user, List<OperationClaim> operationClaims)
-        {
-            _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
-            var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
-            var signingCredentials = SigningCredentialsHelper.CreateSigningCredentials(securityKey);
-            var jwt = CreateJwtSecurityTokenForCorporateUser(_tokenOptions, user, signingCredentials, operationClaims);
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var token = jwtSecurityTokenHandler.WriteToken(jwt);
-
-            return new AccessToken
-            {
-                Token = token,
-                Expiration = _accessTokenExpiration
-            };
-        }
-
-        private SecurityToken CreateJwtSecurityTokenForCorporateUser(TokenOptions tokenOptions, CorporateUser user, SigningCredentials signingCredentials, List<OperationClaim> operationClaims)
-        {
-            var jwt = new JwtSecurityToken(
-                issuer: tokenOptions.Issuer,
-                audience: tokenOptions.Audience,
-                expires: _accessTokenExpiration,
-                notBefore: DateTime.Now,
-                claims: SetClaimsForCorporateUser(user, operationClaims),
-                signingCredentials: signingCredentials
-            );
-
-            return jwt;
-        }
-
-        private IEnumerable<Claim> SetClaimsForCorporateUser(CorporateUser user, List<OperationClaim> operationClaims)
-        {
-            var claims = new List<Claim>();
-            claims.AddNameIdentifier(user.Id.ToString());
-            claims.AddEmail(user.Email);
-            claims.AddName(user.CompanyName);
-            claims.AddRoles(operationClaims.Select(c => c.Name).ToArray());
-
-            return claims;
-        }
+        
     }
 }

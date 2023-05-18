@@ -5,49 +5,58 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Business.Constants;
+using Business.Services.ImageService.Abstracts;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Hashing;
 using DataAccess.Abstract;
+using Entities.Concrete;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete
 {
-    public class IndividualUserManager:IUserService<IndividualUser>
+    public class UserManager : IUserService
     {
-        private IIndividualUserDal _individualUserDal;
+        private IUserDal _userDal;
+        private readonly ImageServiceBase _imageServiceBase;
 
-        public IndividualUserManager(IIndividualUserDal individualUserDal)
+        public UserManager(IUserDal userDal, ImageServiceBase imageServiceBase)
         {
-            _individualUserDal = individualUserDal;
+            _userDal = userDal;
+            _imageServiceBase = imageServiceBase;
         }
 
-        public IDataResult<List<OperationClaim>> GetClaims(IndividualUser entity)
+        public IDataResult<List<OperationClaim>> GetClaims(User entity)
         {
-            return new SuccessDataResult<List<OperationClaim>>(_individualUserDal.GetClaims(entity));
+            return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(entity));
         }
 
-        public IResult Add(IndividualUser entity)
+        public IResult Add(User entity)
         {
-            _individualUserDal.Add(entity);
+            _userDal.Add(entity);
             return new SuccessResult();
         }
 
-        public IDataResult<IndividualUser> GetByMail(string email)
+        public IDataResult<User> GetByMail(string email)
         {
-            var result=_individualUserDal.Get(iu => iu.Email == email);
-            if (result.Id>0)
+            var result = _userDal.Get(iu => iu.Email == email);
+            if (result == null)
             {
-                return new SuccessDataResult<IndividualUser>(result);
+                return new ErrorDataResult<User>();
+            }
+            if (result.Id > 0)
+            {
+                return new SuccessDataResult<User>(result);
             }
 
-            return new ErrorDataResult<IndividualUser>();
+            return new ErrorDataResult<User>();
         }
 
-        public IDataResult<IndividualUser> GetById(int id)
+        public IDataResult<User> GetById(int id)
         {
-            return new SuccessDataResult<IndividualUser>(_individualUserDal.Get(u => u.Id == id));
+            return new SuccessDataResult<User>(_userDal.Get(u => u.Id == id));
         }
 
         public IResult ChangePassword(UpdatePasswordDto updatePasswordDto)
@@ -55,7 +64,7 @@ namespace Business.Concrete
             var rulesResult = BusinessRules.Run(CheckIfNewPasswordsMatch(updatePasswordDto.NewPassword, updatePasswordDto.NewPasswordAgain), CheckSamePasswords(updatePasswordDto.Password, updatePasswordDto.NewPassword));
             if (rulesResult != null) return rulesResult;
 
-            var userResult = _individualUserDal.Get(u => u.Id == updatePasswordDto.Id);
+            var userResult = _userDal.Get(u => u.Id == updatePasswordDto.Id);
 
             var verifyResult = HashingHelper.VerifyPasswordHash(updatePasswordDto.Password, userResult.PasswordHash, userResult.PasswordSalt);
             if (!verifyResult) return new ErrorResult(Messages.PasswordError);
@@ -66,7 +75,7 @@ namespace Business.Concrete
             userResult.PasswordHash = passwordHash;
             userResult.PasswordSalt = passwordSalt;
 
-            _individualUserDal.Update(userResult);
+            _userDal.Update(userResult);
             return new SuccessResult(Messages.PasswordUpdated);
         }
         private IResult CheckIfNewPasswordsMatch(string newPassword, string newPasswordAgain)
@@ -78,6 +87,23 @@ namespace Business.Concrete
         private IResult CheckSamePasswords(string newPassword, string password)
         {
             if (newPassword == password) return new ErrorResult(Messages.PasswordsSame);
+            return new SuccessResult();
+        }
+
+        public IResult AddImage(AddUserImageDto addUserImageDto)
+        {
+            User? user = _userDal.Get(u => u.Id == addUserImageDto.Id);
+            user.ImagePath = _imageServiceBase.Upload(addUserImageDto.FormFile);
+            _userDal.Update(user);
+
+            return new SuccessResult();
+        }
+
+        public IResult DeleteImage(DeleteUserImageDto deleteUserImageDto)
+        {
+            User? user = _userDal.Get(u => u.Id == deleteUserImageDto.Id);
+            _imageServiceBase.Delete(user.ImagePath);
+
             return new SuccessResult();
         }
     }

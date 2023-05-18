@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Core.Entities.Concrete;
+using Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,9 @@ namespace WebAPI.Controllers
     [ApiController]
     public class IndividualUserController : ControllerBase
     {
-        IUserService<IndividualUser> _userService;
+        IUserService _userService;
 
-        public IndividualUserController(IUserService<IndividualUser> userService)
+        public IndividualUserController(IUserService userService)
         {
             _userService = userService;
         }

@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.Entities.Concrete;
 
-namespace Core.Entities.Concrete
+namespace Entities.Concrete
 {
-    public class CorporateUser : User
+    public class IndividualUser : User
     {
-        public string CompanyName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
     }
 }

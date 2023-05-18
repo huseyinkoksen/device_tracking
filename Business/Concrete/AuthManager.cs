@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Business.Constants;
+using Business.Services.HttpContextAccessorService.Abstracts;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.JWT;
+using Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.Identity.Client;
 
@@ -16,16 +18,15 @@ namespace Business.Concrete
 {
     public class AuthManager : IAuthService
     {
-        IUserService<IndividualUser> _userServiceIU;
-        IUserService<CorporateUser> _userServiceCU;
+        IUserService _userService;
         ITokenHelper _tokenHelper;
+        IHttpContextAccessorService _httpContextAccessorService;
 
-        public AuthManager(IUserService<IndividualUser> userServiceIU, ITokenHelper tokenHelper,
-            IUserService<CorporateUser> userServiceCu)
+        public AuthManager(IUserService userService, ITokenHelper tokenHelper, IHttpContextAccessorService httpContextAccessorService)
         {
-            _userServiceIU = userServiceIU;
+            _userService = userService;
             _tokenHelper = tokenHelper;
-            _userServiceCU = userServiceCu;
+            _httpContextAccessorService = httpContextAccessorService;
         }
 
         public IDataResult<CorporateUser> RegisterCorporate(CorporateUserForRegisterDto userForRegisterDto,
@@ -41,42 +42,27 @@ namespace Business.Concrete
                 PasswordSalt = passwordSalt,
                 Status = true
             };
-            _userServiceCU.Add(user);
+            _userService.Add(user);
             return new SuccessDataResult<CorporateUser>(user, Messages.UserRegistered);
         }
 
-        public IDataResult<IndividualUser> LoginIndividual(UserForLoginDto userForLoginDto)
+        public IDataResult<AccessToken> Login(UserForLoginDto userForLoginDto)
         {
-            var userToCheck = _userServiceIU.GetByMail(userForLoginDto.Email).Data;
+            var userToCheck = _userService.GetByMail(userForLoginDto.Email).Data;
             if (userToCheck == null)
             {
-                return new ErrorDataResult<IndividualUser>(Messages.UserNotFound);
+                return new ErrorDataResult<AccessToken>(Messages.UserNotFound);
             }
 
             if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash,
                     userToCheck.PasswordSalt))
             {
-                return new ErrorDataResult<IndividualUser>(Messages.PasswordError);
+                return new ErrorDataResult<AccessToken>(Messages.PasswordError);
             }
-
-            return new SuccessDataResult<IndividualUser>(userToCheck, Messages.SuccessfulLogin);
+            var result = CreateAccessTokenForUser(userToCheck);
+            return new SuccessDataResult<AccessToken>(result.Data, Messages.SuccessfulLogin);
         }
-     public IDataResult<CorporateUser> LoginCorporate(UserForLoginDto userForLoginDto)
-            {
-                var userToCheck = _userServiceCU.GetByMail(userForLoginDto.Email).Data;
-                if (userToCheck == null)
-                {
-                    return new ErrorDataResult<CorporateUser>(Messages.UserNotFound);
-                }
 
-                if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash,
-                        userToCheck.PasswordSalt))
-                {
-                    return new ErrorDataResult<CorporateUser>(Messages.PasswordError);
-                }
-
-                return new SuccessDataResult<CorporateUser>(userToCheck, Messages.SuccessfulLogin);
-            }
         public IDataResult<IndividualUser> RegisterIndividual(IndividualUserForRegisterDto userForRegisterDto,
             string password)
         {
@@ -89,17 +75,18 @@ namespace Business.Concrete
                 LastName = userForRegisterDto.LastName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Status = true
+                Status = true,
+                ImagePath = userForRegisterDto.ImagePath
             };
-            _userServiceIU.Add(user);
+            _userService.Add(user);
             return new SuccessDataResult<IndividualUser>(user, Messages.UserRegistered);
         }
 
-       
+
 
         public IResult UserExists(string email)
         {
-            if ((_userServiceCU.GetByMail(email).Data != null) && (_userServiceIU.GetByMail(email).Data !=null ))
+            if ((_userService.GetByMail(email).Data != null) && (_userService.GetByMail(email).Data != null))
             {
                 return new ErrorResult(Messages.UserAlreadyExists);
             }
@@ -107,19 +94,18 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        public IDataResult<AccessToken> CreateAccessTokenForIndividualUser(IndividualUser user)
+        public IDataResult<AccessToken> CreateAccessTokenForUser(User user)
         {
-            var claims = _userServiceIU.GetClaims(user).Data;
-            var accessToken = _tokenHelper.CreateTokenForIndividualUser(user, claims);
+            var claims = _userService.GetClaims(user).Data;
+            var accessToken = _tokenHelper.CreateTokenForUser(user, claims);
             return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
 
         }
 
-        public IDataResult<AccessToken> CreateAccessTokenForCorporateUser(CorporateUser user)
+        public IDataResult<User> GetCurrentUser()
         {
-            var claims = _userServiceCU.GetClaims(user).Data;
-            var accessToken = _tokenHelper.CreateTokenForCorporateUser(user, claims);
-            return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
+            string nameIdentifier = _httpContextAccessorService.GetCurrentNameIdentifier();
+            return _userService.GetById(Convert.ToInt32(nameIdentifier));
         }
     }
 }

@@ -31,5 +31,7 @@ namespace Business.Constants
 
         public static string NewPasswordsMatchError = "Yeni parolalarınız eşleşmiyor.";
         public static string PasswordsSame = "Eski ve Yeni şifre aynı";
+
+        public static string AuthorizationDenied = "Yetkiniz Yok";
     }
 }

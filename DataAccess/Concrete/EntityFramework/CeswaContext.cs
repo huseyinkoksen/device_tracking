@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Core.Entities.Concrete;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DataAccess.Concrete.EntityFramework
 {
@@ -35,6 +36,7 @@ namespace DataAccess.Concrete.EntityFramework
                 a.Property(p => p.PasswordHash).HasColumnName("PasswordHash");
                 a.Property(p => p.PasswordSalt).HasColumnName("PasswordSalt");
                 a.Property(p => p.Status).HasColumnName("Status");
+                a.Property(p => p.ImagePath).HasColumnName("ImagePath");
             });
 
             modelBuilder.Entity<CorporateUser>(a =>
