@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
-using Core.Utilities.Results;
+using Core.Entities.Concrete;
+using Entities.Concrete;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -9,13 +11,34 @@ namespace WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        IUserService _userService;
 
         public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
+        [HttpGet("getbyid")]
+        public IActionResult GetById(int id)
+        {
+            var result = _userService.GetById(id);
+            if (!result.Success) return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpPost("changepassword")]
+        public IActionResult ChangePassword(UpdatePasswordDto updatePasswordDto)
+        {
+
+            var result = _userService.ChangePassword(updatePasswordDto);
+            if (result.Success)
+            {
+                return Ok(result);
+
+            }
+            return BadRequest(result);
+        }
         [HttpPost("[action]")]
         public IActionResult UpdateImage([FromForm] AddUserImageDto addUserImageDto)
         {

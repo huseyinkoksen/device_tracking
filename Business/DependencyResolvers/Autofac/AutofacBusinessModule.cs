@@ -16,15 +16,15 @@ namespace Business.DependencyResolvers.Autofac
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<CommentManager>().As<ICommentService>();
-            builder.RegisterType<EfCommentDal>().As<ICommentDal>();
+            builder.RegisterType<EmployeeManager>().As<IEmployeeService>();
+            builder.RegisterType<EfEmployeeDal>().As<IEmployeeDal>();
 
             builder.RegisterType<UserManager>().As<IUserService>();
             builder.RegisterType<EfUserDal>().As<IUserDal>();
 
 
-            builder.RegisterType<CompanyManager>().As<ICompanyService>();
-            builder.RegisterType<EfCompanyDal>().As<ICompanyDal>();
+            builder.RegisterType<DeviceManager>().As<IDeviceService>();
+            builder.RegisterType<EfDeviceDal>().As<IDeviceDal>();
 
             builder.RegisterType<AuthManager>().As<IAuthService>();
             builder.RegisterType<JwtHelper>().As<ITokenHelper>();

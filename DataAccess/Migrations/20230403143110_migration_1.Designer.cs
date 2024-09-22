@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess.Migrations
 {
-    [DbContext(typeof(CeswaContext))]
+    [DbContext(typeof(DeviceTrackingContext))]
     [Migration("20230403143110_migration_1")]
     partial class migration_1
     {
@@ -98,7 +98,7 @@ namespace DataAccess.Migrations
                     b.ToTable("UserOperationClaims");
                 });
 
-            modelBuilder.Entity("Entities.Concrete.Comment", b =>
+            modelBuilder.Entity("Entities.Concrete.Employee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int>("DeviceId")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
@@ -118,10 +118,10 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Entities.Concrete.Company", b =>
+            modelBuilder.Entity("Entities.Concrete.Device", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,11 +129,11 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompanyName")
+                    b.Property<string>("DeviceName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyType")
+                    b.Property<string>("DeviceType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -150,10 +150,10 @@ namespace DataAccess.Migrations
                 {
                     b.HasBaseType("Core.Entities.Concrete.User");
 
-                    b.Property<string>("CompanyName")
+                    b.Property<string>("DeviceName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CompanyName");
+                        .HasColumnName("DeviceName");
 
                     b.ToTable("CorporateUsers", (string)null);
                 });

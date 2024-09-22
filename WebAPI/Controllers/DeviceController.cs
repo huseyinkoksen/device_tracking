@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,18 +8,18 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CompanyController : ControllerBase
+    public class DeviceController : ControllerBase
     {
-        private ICompanyService _companyService;
-        public CompanyController(ICompanyService companyService)
+        private IDeviceService _deviceService;
+        public DeviceController(IDeviceService deviceService)
         {
-            _companyService = companyService;
+            _deviceService = deviceService;
         }
 
         [HttpGet("getall")]
         public IActionResult GetAll()
         {
-            var result = _companyService.GetAll();
+            var result = _deviceService.GetAll();
             if (result.Success)
             {
                 return Ok(result);
@@ -29,7 +30,7 @@ namespace WebAPI.Controllers
         [HttpGet("getbyid")]
         public IActionResult GetById(int id)
         {
-            var result = _companyService.GetById(id);
+            var result = _deviceService.GetById(id);
             if (result.Success)
             {
                 return Ok(result);
@@ -37,11 +38,21 @@ namespace WebAPI.Controllers
 
             return BadRequest(result);
         }
+        [HttpGet("[Action]")]
+        public IActionResult GetDevicesDetails()
+        {
+            var result = _deviceService.GetDevicesDetails();
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
 
         [HttpPost("add")]
-        public IActionResult Add(Company entity)
+        public IActionResult Add(Device entity)
         {
-            var result = _companyService.AddCompany(entity);
+            var result = _deviceService.AddDevice(entity);
             if (result.Success)
             {
                 return Ok(result);
@@ -50,9 +61,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public IActionResult Update(Company entity)
+        public IActionResult Update(Device entity)
         {
-            var result = _companyService.UpdateCompany(entity);
+            var result = _deviceService.UpdateDevice(entity);
             if (result.Success)
             {
                 return Ok(result);
@@ -61,9 +72,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("delete")]
-        public IActionResult Delete(Company entity)
+        public IActionResult Delete(Device entity)
         {
-            var result = _companyService.DeleteCompany(entity);
+            var result = _deviceService.DeleteDevice(entity);
             if (result.Success)
             {
                 return Ok(result);

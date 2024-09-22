@@ -29,22 +29,7 @@ namespace Business.Concrete
             _httpContextAccessorService = httpContextAccessorService;
         }
 
-        public IDataResult<CorporateUser> RegisterCorporate(CorporateUserForRegisterDto userForRegisterDto,
-            string password)
-        {
-            byte[] passwordHash, passwordSalt;
-            HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
-            var user = new CorporateUser()
-            {
-                Email = userForRegisterDto.Email,
-                CompanyName = userForRegisterDto.CompanyName,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Status = true
-            };
-            _userService.Add(user);
-            return new SuccessDataResult<CorporateUser>(user, Messages.UserRegistered);
-        }
+        
 
         public IDataResult<AccessToken> Login(UserForLoginDto userForLoginDto)
         {
@@ -63,12 +48,12 @@ namespace Business.Concrete
             return new SuccessDataResult<AccessToken>(result.Data, Messages.SuccessfulLogin);
         }
 
-        public IDataResult<IndividualUser> RegisterIndividual(IndividualUserForRegisterDto userForRegisterDto,
+        public IDataResult<User> Register(UserForRegisterDto userForRegisterDto,
             string password)
         {
             byte[] passwordHash, passwordSalt;
             HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
-            var user = new IndividualUser()
+            var user = new User()
             {
                 Email = userForRegisterDto.Email,
                 FirstName = userForRegisterDto.FirstName,
@@ -79,7 +64,7 @@ namespace Business.Concrete
                 ImagePath = userForRegisterDto.ImagePath
             };
             _userService.Add(user);
-            return new SuccessDataResult<IndividualUser>(user, Messages.UserRegistered);
+            return new SuccessDataResult<User>(user, Messages.UserRegistered);
         }
 
 

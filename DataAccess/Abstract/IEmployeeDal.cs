@@ -9,7 +9,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Abstract
 {
-    public interface ICommentDal:IEntityRepository<Comment>
+    public interface IEmployeeDal:IEntityRepository<Employee>
     {
         IResult DeleteById(int id);
     }

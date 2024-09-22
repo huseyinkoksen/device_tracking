@@ -16,35 +16,18 @@ namespace WebAPI.Controllers
             _authService = authService;
         }
 
-        [HttpPost("registercorporate")]
-        public IActionResult RegisterCU(CorporateUserForRegisterDto corporateUserForRegisterDto)
+      
+
+        [HttpPost("register")]
+        public IActionResult RegisterIU(UserForRegisterDto UserForRegisterDto)
         {
-            var userexists = _authService.UserExists(corporateUserForRegisterDto.Email);
+            var userexists = _authService.UserExists(UserForRegisterDto.Email);
             if (!userexists.Success)
             {
                 return BadRequest(userexists.Message);
             }
 
-            var registerResult = _authService.RegisterCorporate(corporateUserForRegisterDto, corporateUserForRegisterDto.Password);
-            var result = _authService.CreateAccessTokenForUser(registerResult.Data);
-            if (result.Success)
-            {
-                return Ok(result.Data);
-            }
-
-            return BadRequest(result.Message);
-        }
-
-        [HttpPost("registerindividual")]
-        public IActionResult RegisterIU(IndividualUserForRegisterDto individualUserForRegisterDto)
-        {
-            var userexists = _authService.UserExists(individualUserForRegisterDto.Email);
-            if (!userexists.Success)
-            {
-                return BadRequest(userexists.Message);
-            }
-
-            var registerResult = _authService.RegisterIndividual(individualUserForRegisterDto, individualUserForRegisterDto.Password);
+            var registerResult = _authService.Register(UserForRegisterDto, UserForRegisterDto.Password);
             var result = _authService.CreateAccessTokenForUser(registerResult.Data);
             if (result.Success)
             {

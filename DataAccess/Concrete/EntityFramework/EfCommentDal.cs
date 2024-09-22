@@ -13,17 +13,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCommentDal:EfEntityRepositoryBase<Comment,CeswaContext>,ICommentDal
+    public class EfEmployeeDal:EfEntityRepositoryBase<Employee,DeviceTrackingContext>,IEmployeeDal
     {
         public IResult DeleteById(int id)
         {
-            using (CeswaContext context=new CeswaContext())
+            using (DeviceTrackingContext context=new DeviceTrackingContext())
             {
-                var commentForDelete = context.Comments.SingleOrDefault(c=>c.Id==id);
-                if (commentForDelete != null)
+                var employeeForDelete = context.Employees.SingleOrDefault(c=>c.Id==id);
+                if (employeeForDelete != null)
                 {
-                    var deletetedComment=context.Entry(commentForDelete);
-                    deletetedComment.State=EntityState.Deleted;
+                    var deletetedEmployee=context.Entry(employeeForDelete);
+                    deletetedEmployee.State=EntityState.Deleted;
                     context.SaveChanges();
                     return new SuccessResult();
                 }

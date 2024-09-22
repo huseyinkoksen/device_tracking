@@ -7,19 +7,19 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CommentController : ControllerBase
+    public class EmployeeController : ControllerBase
     {
-        private ICommentService _commentService;
+        private IEmployeeService _employeeService;
 
-        public CommentController(ICommentService commentService)
+        public EmployeeController(IEmployeeService employeeService)
         {
-            _commentService = commentService;
+            _employeeService = employeeService;
         }
 
         [HttpGet("getall")]
         public IActionResult GetAll()
         {
-            var result = _commentService.GetAll();
+            var result = _employeeService.GetAll();
             if (result.Success)
             {
                 return Ok(result);
@@ -30,7 +30,7 @@ namespace WebAPI.Controllers
         [HttpGet("getbyid")]
         public IActionResult GetById(int id)
         {
-            var result = _commentService.GetById(id);
+            var result = _employeeService.GetById(id);
             if (result.Success)
             {
                 return Ok(result);
@@ -39,10 +39,10 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getbycompanyid")]
-        public IActionResult GetByCompanyId(int companyId)
+        [HttpGet("getbydeviceid")]
+        public IActionResult GetByDeviceId(int deviceId)
         {
-            var result = _commentService.GetByCompanyId(companyId);
+            var result = _employeeService.GetByDeviceId(deviceId);
             if (result.Success)
             {
                 return Ok(result);
@@ -52,9 +52,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult Add(Comment entity)
+        public IActionResult Add(Employee entity)
         {
-            var result = _commentService.AddComment(entity);
+            var result = _employeeService.AddEmployee(entity);
             if (result.Success)
             {
                 return Ok(result);
@@ -63,9 +63,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public IActionResult Update(Comment entity)
+        public IActionResult Update(Employee entity)
         {
-            var result = _commentService.UpdateComment(entity);
+            var result = _employeeService.UpdateEmployee(entity);
             if (result.Success)
             {
                 return Ok(result);
@@ -74,9 +74,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("delete")]
-        public IActionResult Delete(Comment entity)
+        public IActionResult Delete(Employee entity)
         {
-            var result = _commentService.DeleteComment(entity);
+            var result = _employeeService.DeleteEmployee(entity);
             if (result.Success)
             {
                 return Ok(result);
@@ -85,9 +85,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("deletebyid")]
-        public IActionResult DeleteById(int commentId)
+        public IActionResult DeleteById(int employeeId)
         {
-            var result = _commentService.DeleteByIdComment(commentId);
+            var result = _employeeService.DeleteByIdEmployee(employeeId);
             if (result.Success)
             {
                 return Ok(result);
@@ -95,16 +95,7 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("[action]")]
-        public IActionResult DeleteCommentByYourself(int id)
-        {
-            var result = _commentService.DeleteCommentByYourself(id);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-
-        }
+        
+        
     }
 }
